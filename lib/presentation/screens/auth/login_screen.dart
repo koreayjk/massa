@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_sizes.dart';
+import '../admin/admin_dashboard_screen.dart';
 import '../home/main_navigation.dart';
+import '../technician/technician_home_screen.dart';
 import 'signup_screen.dart';
 
 /// 로그인 화면 (MVP: UI만, 실제 인증 없음).
@@ -144,10 +146,100 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ],
               ),
+              const SizedBox(height: AppSizes.sm),
+              Center(
+                child: TextButton.icon(
+                  onPressed: () => _showDemoSheet(context),
+                  icon: const Icon(Icons.grid_view_rounded,
+                      size: 16, color: AppColors.textSecondary),
+                  label: const Text('데모 모드 · 앱 둘러보기',
+                      style: TextStyle(color: AppColors.textSecondary)),
+                ),
+              ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  void _showDemoSheet(BuildContext context) {
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: AppColors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (sheetContext) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(AppSizes.lg),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Padding(
+                padding: EdgeInsets.fromLTRB(8, 4, 8, 12),
+                child: Text('데모 모드',
+                    style: TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.w800)),
+              ),
+              _demoTile(
+                sheetContext,
+                icon: Icons.phone_iphone_rounded,
+                title: '고객 앱',
+                subtitle: '검색 · 예약 · 양방향 평점',
+                page: const MainNavigation(),
+              ),
+              _demoTile(
+                sheetContext,
+                icon: Icons.spa_rounded,
+                title: '테크니션 앱',
+                subtitle: '일정 · 고객 신고 · SOS 긴급 알림',
+                page: const TechnicianHomeScreen(),
+              ),
+              _demoTile(
+                sheetContext,
+                icon: Icons.admin_panel_settings_outlined,
+                title: '관리자 웹',
+                subtitle: '신고 관리 · 블랙리스트 관리',
+                page: const AdminDashboardScreen(),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _demoTile(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required Widget page,
+  }) {
+    return ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      leading: Container(
+        width: 44,
+        height: 44,
+        decoration: BoxDecoration(
+          color: AppColors.accentSoft,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Icon(icon, color: AppColors.navy),
+      ),
+      title: Text(title,
+          style: const TextStyle(fontWeight: FontWeight.w700)),
+      subtitle: Text(subtitle,
+          style: const TextStyle(fontSize: 12.5)),
+      trailing: const Icon(Icons.chevron_right_rounded),
+      onTap: () {
+        Navigator.of(context).pop();
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => page),
+        );
+      },
     );
   }
 }

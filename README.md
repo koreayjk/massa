@@ -27,9 +27,29 @@
 
 디자인: 딥 네이비(`#0B2545`) + 화이트 기반의 모던·미니멀 테마.
 
+## 🛡 신뢰 · 안전 기능 (Trust & Safety)
+
+세 앱에 걸친 신고·안전 기능을 데모용으로 구현했습니다. 로그인 화면 하단
+**"데모 모드 · 앱 둘러보기"** 에서 고객 앱 / 테크니션 앱 / 관리자 웹으로 바로 진입할 수 있습니다.
+
+| 앱 | 기능 | 위치 |
+|----|------|------|
+| 고객 앱 | **양방향 평점 시스템** — 테크니션 리뷰 작성 + 내가 받은 "매너 평점" 조회 | `lib/presentation/screens/customer/rating/` |
+| 테크니션 앱 | **고객 신고 버튼** (예약별 신고) | `lib/presentation/screens/technician/report_customer_screen.dart` |
+| 테크니션 앱 | **SOS 긴급 알림** (위치 공유 · 관리자/긴급연락처 즉시 통보) | `lib/presentation/screens/technician/sos_screen.dart` |
+| 관리자 웹 | **신고 관리 시스템** — 상태 필터 · 처리(처리중/완료/반려) · 블랙리스트 연동 | `lib/presentation/screens/admin/report_management_screen.dart` |
+| 관리자 웹 | **블랙리스트 관리** — 등록/해제 · 수동 등록 · 신고 연동 | `lib/presentation/screens/admin/blacklist_management_screen.dart` |
+
+신고(`Report`)·블랙리스트(`BlacklistEntry`) 모델과 데이터는
+`lib/data/models/` 및 `lib/data/repositories/mock_repository.dart`에 있습니다.
+고객↔테크니션 신고는 양방향으로 접수되며, 관리자 웹의 신고 처리 → 블랙리스트 등록이
+실제로 연동됩니다.
+
 ## ⛔ MVP에서 제외 (다음 단계)
 
-실제 결제 연동 · 실시간 GPS 추적 · AI 챗봇 · 테크니션 앱 · 관리자 웹.
+실제 결제 연동 · 실시간 GPS 추적 · AI 챗봇.
+테크니션 앱과 관리자 웹은 위 신뢰·안전 기능 위주로 데모 수준만 구현되어 있으며,
+전체 기능(일정 관리·정산·회원 관리·KYC 등)은 다음 단계입니다.
 현재는 **목업 데이터**(`lib/data/repositories/mock_repository.dart`)로 동작하며,
 백엔드(Supabase) 연동은 `lib/services/` 레이어에 추가할 예정입니다.
 

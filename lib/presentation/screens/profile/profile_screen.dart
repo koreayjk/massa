@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/utils/formatters.dart';
+import '../../../data/repositories/mock_repository.dart';
 import '../../widgets/avatar.dart';
+import '../../widgets/star_rating_input.dart';
 import '../auth/login_screen.dart';
+import '../customer/rating/received_ratings_screen.dart';
 
 class _MenuItem {
   final IconData icon;
@@ -48,6 +51,8 @@ class ProfileScreen extends StatelessWidget {
         padding: const EdgeInsets.all(AppSizes.screenPadding),
         children: [
           _profileCard(),
+          const SizedBox(height: AppSizes.md),
+          _mannerRatingTile(context),
           const SizedBox(height: AppSizes.md),
           _walletMembership(),
           const SizedBox(height: AppSizes.xl),
@@ -104,6 +109,45 @@ class ProfileScreen extends StatelessWidget {
           const Icon(Icons.chevron_right_rounded,
               color: AppColors.textHint),
         ],
+      ),
+    );
+  }
+
+  Widget _mannerRatingTile(BuildContext context) {
+    final repo = MockRepository.instance;
+    return InkWell(
+      onTap: () => Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const ReceivedRatingsScreen()),
+      ),
+      borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+      child: Container(
+        padding: const EdgeInsets.all(AppSizes.lg),
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+          border: Border.all(color: AppColors.border),
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.handshake_outlined,
+                color: AppColors.navy, size: 22),
+            const SizedBox(width: 12),
+            const Expanded(
+              child: Text('내 매너 평점',
+                  style: TextStyle(
+                      fontSize: 15, fontWeight: FontWeight.w600)),
+            ),
+            StarRow(rating: repo.myMannerRating, size: 16),
+            const SizedBox(width: 6),
+            Text(repo.myMannerRating.toStringAsFixed(1),
+                style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.navy)),
+            const Icon(Icons.chevron_right_rounded,
+                color: AppColors.textHint),
+          ],
+        ),
       ),
     );
   }

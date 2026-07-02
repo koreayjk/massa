@@ -1,4 +1,6 @@
+import '../models/blacklist_entry.dart';
 import '../models/booking.dart';
+import '../models/report.dart';
 import '../models/review.dart';
 import '../models/service.dart';
 import '../models/therapist.dart';
@@ -175,4 +177,122 @@ class MockRepository {
   ];
 
   void addBooking(Booking booking) => bookings.insert(0, booking);
+
+  // ─────────────────────────────────────────────────────────────
+  // 양방향 평점 시스템 (고객 ↔ 테크니션)
+  // ─────────────────────────────────────────────────────────────
+
+  /// 로그인한 고객이 테크니션으로부터 받은 "매너 평점".
+  double myMannerRating = 4.8;
+  int myMannerRatingCount = 12;
+
+  /// 고객이 테크니션에게 받은 리뷰(양방향 평점의 반대편).
+  final List<Review> myReceivedReviews = [
+    Review(
+      id: 'mr1',
+      authorName: '이수정 관리사',
+      rating: 5,
+      comment: '시간 약속을 잘 지켜주시고 응대가 친절하셨어요. 다시 만나뵙고 싶은 고객님입니다!',
+      createdAt: DateTime(2026, 6, 18),
+    ),
+    Review(
+      id: 'mr2',
+      authorName: '박준호 관리사',
+      rating: 4.5,
+      comment: '쾌적한 환경에서 편하게 케어해 드렸습니다. 감사합니다 :)',
+      createdAt: DateTime(2026, 5, 20),
+    ),
+  ];
+
+  /// 고객이 테크니션에게 남긴 리뷰 저장(예약 완료 후).
+  final List<Review> customerWrittenReviews = [];
+
+  void addCustomerReview(Review review) =>
+      customerWrittenReviews.insert(0, review);
+
+  // ─────────────────────────────────────────────────────────────
+  // 신고 관리 (관리자 웹)
+  // ─────────────────────────────────────────────────────────────
+
+  final List<Report> reports = [
+    Report(
+      id: 'rp1',
+      reporterRole: ReporterRole.technician,
+      reporterName: '박준호',
+      targetName: '익명 고객 (김OO)',
+      bookingId: 'b2',
+      reason: ReportReason.harassment,
+      detail: '방문 중 부적절한 신체 접촉 및 성희롱 발언이 있었습니다. 즉시 현장을 떠났습니다.',
+      createdAt: DateTime(2026, 6, 30, 21, 12),
+      status: ReportStatus.pending,
+    ),
+    Report(
+      id: 'rp2',
+      reporterRole: ReporterRole.customer,
+      reporterName: '김민지',
+      targetName: '정하늘',
+      bookingId: 'b1',
+      reason: ReportReason.noShow,
+      detail: '예약 시간에 관리사가 나타나지 않았고 연락도 되지 않았습니다.',
+      createdAt: DateTime(2026, 6, 28, 15, 40),
+      status: ReportStatus.reviewing,
+    ),
+    Report(
+      id: 'rp3',
+      reporterRole: ReporterRole.customer,
+      reporterName: '이서준',
+      targetName: '최유나',
+      reason: ReportReason.payment,
+      detail: '결제 금액이 예약 시 안내받은 금액과 다르게 청구되었습니다.',
+      createdAt: DateTime(2026, 6, 25, 11, 5),
+      status: ReportStatus.resolved,
+    ),
+  ];
+
+  void addReport(Report report) => reports.insert(0, report);
+
+  void updateReportStatus(Report report, ReportStatus status) =>
+      report.status = status;
+
+  int get pendingReportCount =>
+      reports.where((r) => r.status == ReportStatus.pending).length;
+
+  // ─────────────────────────────────────────────────────────────
+  // 블랙리스트 관리 (관리자 웹)
+  // ─────────────────────────────────────────────────────────────
+
+  final List<BlacklistEntry> blacklist = [
+    BlacklistEntry(
+      id: 'bl1',
+      name: '익명 고객 (박OO)',
+      role: BlacklistRole.customer,
+      reason: '반복적인 노쇼 (3회) 및 예약금 미납',
+      addedAt: DateTime(2026, 6, 10),
+      active: true,
+    ),
+    BlacklistEntry(
+      id: 'bl2',
+      name: '홍길동',
+      role: BlacklistRole.technician,
+      reason: '무단 예약 취소 반복, 고객 불만 다수 접수',
+      addedAt: DateTime(2026, 5, 28),
+      active: true,
+    ),
+  ];
+
+  void addToBlacklist(BlacklistEntry entry) => blacklist.insert(0, entry);
+
+  void setBlacklistActive(BlacklistEntry entry, bool active) =>
+      entry.active = active;
+
+  int get activeBlacklistCount =>
+      blacklist.where((e) => e.active).length;
+
+  // ─────────────────────────────────────────────────────────────
+  // SOS 긴급 알림 이력 (테크니션 → 관리자/긴급연락처)
+  // ─────────────────────────────────────────────────────────────
+
+  int sosAlertCount = 0;
+
+  void triggerSos() => sosAlertCount++;
 }

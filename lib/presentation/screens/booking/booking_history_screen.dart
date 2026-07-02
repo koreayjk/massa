@@ -6,6 +6,8 @@ import '../../../core/utils/formatters.dart';
 import '../../../data/models/booking.dart';
 import '../../../data/repositories/mock_repository.dart';
 import '../../widgets/avatar.dart';
+import '../chat/chat_screen.dart';
+import '../customer/rating/write_review_screen.dart';
 
 /// 예약 내역 화면 — 예정 / 완료 탭.
 class BookingHistoryScreen extends StatelessWidget {
@@ -161,7 +163,12 @@ class _BookingTile extends StatelessWidget {
                 const SizedBox(width: 10),
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            ChatScreen(peerName: booking.therapist.name),
+                      ),
+                    ),
                     style: ElevatedButton.styleFrom(
                         minimumSize: const Size.fromHeight(44)),
                     child: const Text('채팅하기'),
@@ -172,7 +179,11 @@ class _BookingTile extends StatelessWidget {
           ] else ...[
             const SizedBox(height: AppSizes.md),
             OutlinedButton.icon(
-              onPressed: () {},
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => WriteReviewScreen(booking: booking),
+                ),
+              ),
               icon: const Icon(Icons.rate_review_outlined, size: 18),
               label: const Text('리뷰 작성'),
               style: OutlinedButton.styleFrom(
