@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/utils/formatters.dart';
+import '../../../core/utils/ui_feedback.dart';
 import '../../../data/models/review.dart';
 import '../../../data/models/therapist.dart';
 import '../../widgets/avatar.dart';
@@ -27,11 +28,13 @@ class TherapistDetailScreen extends StatelessWidget {
         title: const Text('관리사 프로필'),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () => context.showToast('즐겨찾기에 추가했어요',
+                icon: Icons.favorite_rounded),
             icon: const Icon(Icons.favorite_border_rounded),
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: () => context.showToast('공유 링크를 복사했어요',
+                icon: Icons.link_rounded),
             icon: const Icon(Icons.share_outlined),
           ),
         ],

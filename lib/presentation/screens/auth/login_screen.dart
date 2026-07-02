@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_sizes.dart';
+import '../../../core/utils/ui_feedback.dart';
 import '../admin/admin_dashboard_screen.dart';
 import '../home/main_navigation.dart';
 import '../technician/technician_home_screen.dart';
@@ -97,7 +98,7 @@ class _LoginScreenState extends State<LoginScreen> {
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
-                  onPressed: () {},
+                  onPressed: () => context.showComingSoon('비밀번호 찾기'),
                   child: const Text('비밀번호 찾기'),
                 ),
               ),

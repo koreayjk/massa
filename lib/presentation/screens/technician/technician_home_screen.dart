@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_sizes.dart';
+import '../../../core/utils/ui_feedback.dart';
 import '../../widgets/avatar.dart';
+import '../chat/chat_screen.dart';
 import 'report_customer_screen.dart';
 import 'sos_screen.dart';
 
@@ -35,7 +37,7 @@ class TechnicianHomeScreen extends StatelessWidget {
         title: const Text('테크니션 · 오늘의 일정'),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () => context.showComingSoon('알림'),
             icon: const Icon(Icons.notifications_none_rounded),
           ),
         ],
@@ -195,7 +197,8 @@ class TechnicianHomeScreen extends StatelessWidget {
             children: [
               Expanded(
                 child: OutlinedButton.icon(
-                  onPressed: () {},
+                  onPressed: () => context.showToast('내비게이션을 실행합니다',
+                      icon: Icons.navigation_rounded),
                   icon: const Icon(Icons.navigation_outlined, size: 18),
                   label: const Text('내비게이션'),
                   style: OutlinedButton.styleFrom(
@@ -205,7 +208,9 @@ class TechnicianHomeScreen extends StatelessWidget {
               const SizedBox(width: 10),
               Expanded(
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () => context.showToast(
+                      active ? '체크아웃 되었습니다' : '체크인 되었습니다',
+                      icon: Icons.check_circle_rounded),
                   style: ElevatedButton.styleFrom(
                       minimumSize: const Size.fromHeight(44)),
                   child: Text(active ? '체크아웃' : '체크인'),
@@ -227,6 +232,12 @@ class TechnicianHomeScreen extends StatelessWidget {
             MaterialPageRoute(
               builder: (_) =>
                   ReportCustomerScreen(customerName: job.customerName),
+            ),
+          );
+        } else if (value == 'chat') {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => ChatScreen(peerName: job.customerName),
             ),
           );
         }

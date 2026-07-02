@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/utils/formatters.dart';
+import '../../../core/utils/ui_feedback.dart';
 import '../../../data/models/booking.dart';
 import '../../../data/repositories/mock_repository.dart';
 import '../../widgets/avatar.dart';
@@ -154,7 +155,7 @@ class _BookingTile extends StatelessWidget {
               children: [
                 Expanded(
                   child: OutlinedButton(
-                    onPressed: () {},
+                    onPressed: () => _confirmCancel(context),
                     style: OutlinedButton.styleFrom(
                         minimumSize: const Size.fromHeight(44)),
                     child: const Text('예약 취소'),
@@ -190,6 +191,37 @@ class _BookingTile extends StatelessWidget {
                   minimumSize: const Size.fromHeight(44)),
             ),
           ],
+        ],
+      ),
+    );
+  }
+
+  void _confirmCancel(BuildContext context) {
+    showDialog<void>(
+      context: context,
+      builder: (dctx) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+        ),
+        title: const Text('예약을 취소할까요?'),
+        content: Text(
+            '${booking.therapist.name} 관리사 · ${Formatters.dateTime(booking.scheduledAt)}\n예약을 취소하면 되돌릴 수 없어요.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dctx).pop(),
+            child: const Text('닫기'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(dctx).pop();
+              context.showToast('예약이 취소되었어요',
+                  icon: Icons.cancel_outlined);
+            },
+            style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.danger,
+                minimumSize: const Size(88, 44)),
+            child: const Text('예약 취소'),
+          ),
         ],
       ),
     );

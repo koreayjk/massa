@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/theme/app_decorations.dart';
+import '../../../core/utils/ui_feedback.dart';
 import '../../../data/models/service_category.dart';
 import '../../../data/models/therapist.dart';
 import '../../../data/repositories/mock_repository.dart';
@@ -89,7 +90,9 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           Row(
             children: [
-              Container(
+              GestureDetector(
+                onTap: () => context.showComingSoon('지역 변경'),
+                child: Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
                 decoration: BoxDecoration(
@@ -111,8 +114,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
               ),
+              ),
               const Spacer(),
-              _circleIcon(Icons.notifications_none_rounded, badge: true),
+              GestureDetector(
+                onTap: () => context.showComingSoon('알림'),
+                child: _circleIcon(Icons.notifications_none_rounded,
+                    badge: true),
+              ),
             ],
           ),
           const SizedBox(height: 18),
@@ -372,7 +380,10 @@ class _HomeScreenState extends State<HomeScreen> {
             separatorBuilder: (_, __) => const SizedBox(width: 12),
             itemBuilder: (_, i) {
               final d = deals[i];
-              return Container(
+              return GestureDetector(
+                onTap: () => context.showToast('쿠폰함에 담았어요',
+                    icon: Icons.confirmation_num_rounded),
+                child: Container(
                 width: 260,
                 padding: const EdgeInsets.all(AppSizes.lg),
                 decoration: BoxDecoration(
@@ -408,6 +419,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ],
                 ),
+              ),
               );
             },
           ),

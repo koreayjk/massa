@@ -63,6 +63,30 @@ class MockRepository {
     ),
   ];
 
+  static final List<Service> _homecare = [
+    const Service(
+      id: 'h1',
+      name: '귀청소 30분',
+      durationMinutes: 30,
+      price: 30000,
+      description: '전문 도구로 안전하게 진행하는 귀 세정 케어.',
+    ),
+    const Service(
+      id: 'h2',
+      name: '왁싱 (전신) 60분',
+      durationMinutes: 60,
+      price: 90000,
+      description: '저자극 왁스로 매끄럽게 마무리하는 제모 케어.',
+    ),
+    const Service(
+      id: 'h3',
+      name: '스웨디시 60분',
+      durationMinutes: 60,
+      price: 68000,
+      description: '부드러운 전신 이완 마사지.',
+    ),
+  ];
+
   static final List<Review> _reviews = [
     Review(
       id: 'r1',
@@ -84,6 +108,20 @@ class MockRepository {
       rating: 5,
       comment: '어깨 뭉친 게 확실히 풀렸어요. 재예약 의사 100%!',
       createdAt: DateTime(2026, 5, 30),
+    ),
+    Review(
+      id: 'r4',
+      authorName: '정예린',
+      rating: 4.5,
+      comment: '예약부터 방문까지 깔끔했어요. 위생 관리도 꼼꼼하셔서 믿음이 갔습니다.',
+      createdAt: DateTime(2026, 5, 22),
+    ),
+    Review(
+      id: 'r5',
+      authorName: '한동석',
+      rating: 5,
+      comment: '출장 마사지는 처음이었는데 기대 이상이었어요. 강도도 딱 맞게 조절해 주셨습니다.',
+      createdAt: DateTime(2026, 5, 15),
     ),
   ];
 
@@ -151,6 +189,38 @@ class MockRepository {
       available: true,
       services: [..._swedish.sublist(0, 2), ..._deep.sublist(0, 1)],
       reviews: _reviews.sublist(0, 1),
+    ),
+    Therapist(
+      id: 't5',
+      name: '한지민',
+      photoUrl: '',
+      bio: '귀청소·스웨디시 전문. 섬세한 손길과 철저한 위생 관리로 편안한 홈케어를 제공합니다.',
+      rating: 4.85,
+      reviewCount: 73,
+      location: '서울 용산구',
+      distanceKm: 2.9,
+      specialties: ['귀청소', '스웨디시'],
+      minPrice: 30000,
+      verified: true,
+      available: true,
+      services: _homecare,
+      reviews: _reviews.sublist(2, 4),
+    ),
+    Therapist(
+      id: 't6',
+      name: '오세훈',
+      photoUrl: '',
+      bio: '왁싱·아로마 전문 관리사. 저자극 제품과 위생을 최우선으로 케어합니다.',
+      rating: 4.75,
+      reviewCount: 51,
+      location: '서울 성동구',
+      distanceKm: 4.2,
+      specialties: ['왁싱', '아로마'],
+      minPrice: 90000,
+      verified: true,
+      available: true,
+      services: [_homecare[1], _swedish[2]],
+      reviews: _reviews.sublist(3),
     ),
   ];
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_sizes.dart';
+import '../../../core/utils/ui_feedback.dart';
 import '../../../data/repositories/mock_repository.dart';
 
 /// SOS 긴급 알림 활성 화면.
@@ -130,7 +131,8 @@ class _SosActiveScreenState extends State<SosActiveScreen>
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
-                  onPressed: () {},
+                  onPressed: () => context.showToast('112로 긴급 연결 중입니다...',
+                      icon: Icons.call_rounded),
                   icon: const Icon(Icons.call_rounded),
                   label: const Text('112 긴급 통화'),
                   style: ElevatedButton.styleFrom(

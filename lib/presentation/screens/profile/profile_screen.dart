@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/utils/formatters.dart';
+import '../../../core/utils/ui_feedback.dart';
 import '../../../data/repositories/mock_repository.dart';
 import '../../widgets/avatar.dart';
 import '../../widgets/star_rating_input.dart';
@@ -42,7 +43,7 @@ class ProfileScreen extends StatelessWidget {
         title: const Text('마이페이지'),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () => context.showComingSoon('설정'),
             icon: const Icon(Icons.settings_outlined),
           ),
         ],
@@ -54,13 +55,13 @@ class ProfileScreen extends StatelessWidget {
           const SizedBox(height: AppSizes.md),
           _mannerRatingTile(context),
           const SizedBox(height: AppSizes.md),
-          _walletMembership(),
+          _walletMembership(context),
           const SizedBox(height: AppSizes.xl),
           _sectionLabel('계정'),
-          _menuGroup(_account),
+          _menuGroup(context, _account),
           const SizedBox(height: AppSizes.xl),
           _sectionLabel('지원'),
-          _menuGroup(_support),
+          _menuGroup(context, _support),
           const SizedBox(height: AppSizes.xl),
           OutlinedButton.icon(
             onPressed: () => Navigator.of(context).pushAndRemoveUntil(
@@ -152,7 +153,7 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _walletMembership() {
+  Widget _walletMembership(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(AppSizes.lg),
       decoration: BoxDecoration(
@@ -195,7 +196,7 @@ class ProfileScreen extends StatelessWidget {
             ),
           ),
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () => context.showComingSoon('Wallet 충전'),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.white,
               foregroundColor: AppColors.navy,
@@ -220,7 +221,7 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _menuGroup(List<_MenuItem> items) {
+  Widget _menuGroup(BuildContext context, List<_MenuItem> items) {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.white,
@@ -247,7 +248,7 @@ class ProfileScreen extends StatelessWidget {
                       color: AppColors.textHint),
                 ],
               ),
-              onTap: () {},
+              onTap: () => context.showComingSoon(items[i].label),
             ),
             if (i < items.length - 1)
               const Divider(
