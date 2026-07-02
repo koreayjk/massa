@@ -42,7 +42,7 @@ class _ExpressBookingScreenState extends State<ExpressBookingScreen> {
     // 데모: 잠시 후 가장 평점 높은 예약가능 관리사를 매칭.
     Future.delayed(const Duration(milliseconds: 1400), () {
       if (!mounted) return;
-      final available = MockRepository.instance.therapists
+      final available = MockRepository.therapists
           .where((t) => t.available)
           .toList()
         ..sort((a, b) => b.rating.compareTo(a.rating));

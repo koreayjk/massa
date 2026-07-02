@@ -22,12 +22,11 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final _repo = MockRepository.instance;
   String? _category; // null = 전체
   String _query = '';
 
   List<Therapist> get _filtered {
-    return _repo.therapists.where((t) {
+    return MockRepository.therapists.where((t) {
       final matchCategory =
           _category == null || t.specialties.contains(_category);
       final matchQuery = _query.isEmpty ||

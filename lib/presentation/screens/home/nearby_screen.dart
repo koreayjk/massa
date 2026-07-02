@@ -13,7 +13,7 @@ class NearbyScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final list = [...MockRepository.instance.therapists]
+    final list = [...MockRepository.therapists]
       ..sort((a, b) => a.distanceKm.compareTo(b.distanceKm));
 
     return Scaffold(
