@@ -43,10 +43,10 @@ class AppTheme {
           backgroundColor: AppColors.navy,
           foregroundColor: AppColors.white,
           elevation: 0,
-          minimumSize: const Size.fromHeight(54),
-          textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+          minimumSize: const Size.fromHeight(56),
+          textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+            borderRadius: BorderRadius.circular(AppSizes.radiusLg),
           ),
         ),
       ),
@@ -71,15 +71,15 @@ class AppTheme {
             const EdgeInsets.symmetric(horizontal: AppSizes.lg, vertical: 16),
         hintStyle: const TextStyle(color: AppColors.textHint),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
           borderSide: const BorderSide(color: AppColors.border),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
           borderSide: const BorderSide(color: AppColors.border),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
           borderSide: const BorderSide(color: AppColors.navy, width: 1.5),
         ),
       ),

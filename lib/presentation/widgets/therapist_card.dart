@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_sizes.dart';
+import '../../core/theme/app_decorations.dart';
 import '../../core/utils/formatters.dart';
 import '../../data/models/therapist.dart';
 import 'avatar.dart';
@@ -25,11 +26,7 @@ class TherapistCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(AppSizes.radiusLg),
       child: Container(
         padding: const EdgeInsets.all(AppSizes.lg),
-        decoration: BoxDecoration(
-          color: AppColors.card,
-          borderRadius: BorderRadius.circular(AppSizes.radiusLg),
-          border: Border.all(color: AppColors.border),
-        ),
+        decoration: AppDecorations.card(radius: AppSizes.radiusLg),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

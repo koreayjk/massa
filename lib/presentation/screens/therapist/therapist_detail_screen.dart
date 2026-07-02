@@ -43,6 +43,8 @@ class TherapistDetailScreen extends StatelessWidget {
           _profileHeader(),
           const SizedBox(height: AppSizes.xl),
           _statsRow(),
+          const SizedBox(height: AppSizes.lg),
+          _trustRow(),
           const SizedBox(height: AppSizes.xl),
           _section('소개'),
           const SizedBox(height: AppSizes.sm),
@@ -187,6 +189,45 @@ class TherapistDetailScreen extends StatelessWidget {
 
   Widget _divider() =>
       Container(width: 1, height: 32, color: AppColors.border);
+
+  /// 신뢰 배지 — 신원인증 · 건강검진 · 안심결제 (Maso 참고).
+  Widget _trustRow() {
+    return Row(
+      children: [
+        _trustChip(Icons.verified_user_rounded, '신원인증'),
+        const SizedBox(width: 8),
+        _trustChip(Icons.health_and_safety_rounded, '건강검진'),
+        const SizedBox(width: 8),
+        _trustChip(Icons.lock_rounded, '안심결제'),
+      ],
+    );
+  }
+
+  Widget _trustChip(IconData icon, String label) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        decoration: BoxDecoration(
+          color: AppColors.accentSoft,
+          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+        ),
+        child: Column(
+          children: [
+            Icon(icon, color: AppColors.navy, size: 20),
+            const SizedBox(height: 5),
+            Text(label,
+                style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.navySoft)),
+            const SizedBox(height: 2),
+            const Text('완료',
+                style: TextStyle(fontSize: 10, color: AppColors.success)),
+          ],
+        ),
+      ),
+    );
+  }
 
   Widget _section(String title) => Text(
         title,

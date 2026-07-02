@@ -2,12 +2,17 @@ import 'package:flutter/material.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_decorations.dart';
+import '../../../data/models/service_category.dart';
 import '../../../data/models/therapist.dart';
 import '../../../data/repositories/mock_repository.dart';
 import '../../widgets/therapist_card.dart';
+import '../booking/express_booking_screen.dart';
 import '../therapist/therapist_detail_screen.dart';
+import 'nearby_screen.dart';
 
-/// 홈 화면 — 테크니션 목록 · 검색 · 카테고리 필터.
+/// 홈 화면 — 프리미엄 리디자인.
+/// 그라데이션 히어로 · 즉시예약/내주변 · 카테고리 · 딜 · 추천 관리사.
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -17,13 +22,13 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final _repo = MockRepository.instance;
-  String _category = '전체';
+  String? _category; // null = 전체
   String _query = '';
 
   List<Therapist> get _filtered {
     return _repo.therapists.where((t) {
       final matchCategory =
-          _category == '전체' || t.specialties.contains(_category);
+          _category == null || t.specialties.contains(_category);
       final matchQuery = _query.isEmpty ||
           t.name.contains(_query) ||
           t.specialties.any((s) => s.contains(_query)) ||
@@ -32,84 +37,110 @@ class _HomeScreenState extends State<HomeScreen> {
     }).toList();
   }
 
-  void _openDetail(Therapist t) {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => TherapistDetailScreen(therapist: t)),
-    );
-  }
+  void _openDetail(Therapist t) => Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => TherapistDetailScreen(therapist: t)),
+      );
 
   @override
   Widget build(BuildContext context) {
     final list = _filtered;
     return Scaffold(
-      body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(child: _header()),
-            SliverToBoxAdapter(child: _searchBar()),
-            SliverToBoxAdapter(child: _categoryChips()),
-            SliverToBoxAdapter(child: _promoBanner()),
-            SliverToBoxAdapter(child: _listHeader(list.length)),
-            if (list.isEmpty)
-              const SliverToBoxAdapter(child: _EmptyResult())
-            else
-              SliverPadding(
-                padding: const EdgeInsets.fromLTRB(
-                    AppSizes.screenPadding, 0, AppSizes.screenPadding, 24),
-                sliver: SliverList.separated(
-                  itemCount: list.length,
-                  separatorBuilder: (_, __) =>
-                      const SizedBox(height: AppSizes.md),
-                  itemBuilder: (_, i) => TherapistCard(
-                    therapist: list[i],
-                    onTap: () => _openDetail(list[i]),
-                  ),
-                ),
-              ),
-          ],
-        ),
+      body: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          _hero(),
+          const SizedBox(height: AppSizes.lg),
+          _quickActions(),
+          const SizedBox(height: AppSizes.xl),
+          _categorySection(),
+          const SizedBox(height: AppSizes.xl),
+          _dealsSection(),
+          const SizedBox(height: AppSizes.xl),
+          _listHeader(list.length),
+          const SizedBox(height: AppSizes.md),
+          if (list.isEmpty)
+            const _EmptyResult()
+          else
+            ...list.map((t) => Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                      AppSizes.screenPadding, 0, AppSizes.screenPadding, AppSizes.md),
+                  child: TherapistCard(therapist: t, onTap: () => _openDetail(t)),
+                )),
+          const SizedBox(height: 24),
+        ],
       ),
     );
   }
 
-  Widget _header() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(
-          AppSizes.screenPadding, AppSizes.md, AppSizes.screenPadding, 0),
-      child: Row(
+  // ── 그라데이션 히어로 ─────────────────────────────
+  Widget _hero() {
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: AppDecorations.brandGradient,
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(28)),
+      ),
+      padding: EdgeInsets.fromLTRB(
+          AppSizes.screenPadding,
+          MediaQuery.of(context).padding.top + 12,
+          AppSizes.screenPadding,
+          24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
+          Row(
+            children: [
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.18),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: const [
-                    Icon(Icons.place_rounded,
-                        color: AppColors.navy, size: 18),
+                    Icon(Icons.place_rounded, color: Colors.white, size: 16),
                     SizedBox(width: 4),
                     Text('서울 강남구',
                         style: TextStyle(
-                            fontWeight: FontWeight.w700, fontSize: 15)),
-                    Icon(Icons.keyboard_arrow_down_rounded, size: 20),
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 13.5)),
+                    Icon(Icons.keyboard_arrow_down_rounded,
+                        color: Colors.white, size: 18),
                   ],
                 ),
-                const SizedBox(height: 4),
-                const Text(
-                  '오늘 어떤 힐링이 필요하세요?',
-                  style: TextStyle(
-                      fontSize: 20, fontWeight: FontWeight.w800),
-                ),
-              ],
-            ),
+              ),
+              const Spacer(),
+              _circleIcon(Icons.notifications_none_rounded, badge: true),
+            ],
           ),
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.notifications_none_rounded),
-            style: IconButton.styleFrom(
-              backgroundColor: AppColors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                side: const BorderSide(color: AppColors.border),
+          const SizedBox(height: 18),
+          const Text('안녕하세요, 김학병님 👋',
+              style: TextStyle(color: Colors.white70, fontSize: 14)),
+          const SizedBox(height: 6),
+          const Text('오늘 어떤 힐링이\n필요하세요?',
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  height: 1.3,
+                  fontWeight: FontWeight.w800)),
+          const SizedBox(height: 18),
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(14),
+              boxShadow: AppDecorations.brand(opacity: 0.18),
+            ),
+            child: TextField(
+              onChanged: (v) => setState(() => _query = v),
+              decoration: const InputDecoration(
+                hintText: '관리사, 서비스, 지역 검색',
+                prefixIcon: Icon(Icons.search_rounded, color: AppColors.navy),
+                border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
+                contentPadding: EdgeInsets.symmetric(vertical: 16),
               ),
             ),
           ),
@@ -118,109 +149,287 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _searchBar() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(
-          AppSizes.screenPadding, AppSizes.lg, AppSizes.screenPadding, 0),
-      child: TextField(
-        onChanged: (v) => setState(() => _query = v),
-        decoration: const InputDecoration(
-          hintText: '관리사, 서비스, 지역 검색',
-          prefixIcon: Icon(Icons.search_rounded),
+  Widget _circleIcon(IconData icon, {bool badge = false}) {
+    return Stack(
+      children: [
+        Container(
+          width: 42,
+          height: 42,
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.18),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(icon, color: Colors.white, size: 22),
         ),
-      ),
-    );
-  }
-
-  Widget _categoryChips() {
-    return SizedBox(
-      height: 48,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.fromLTRB(
-            AppSizes.screenPadding, AppSizes.md, AppSizes.screenPadding, 0),
-        itemCount: MockRepository.categories.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 8),
-        itemBuilder: (_, i) {
-          final c = MockRepository.categories[i];
-          final selected = c == _category;
-          return ChoiceChip(
-            label: Text(c),
-            selected: selected,
-            onSelected: (_) => setState(() => _category = c),
-            labelStyle: TextStyle(
-              color: selected ? AppColors.white : AppColors.textSecondary,
-              fontWeight: FontWeight.w600,
+        if (badge)
+          Positioned(
+            right: 10,
+            top: 9,
+            child: Container(
+              width: 8,
+              height: 8,
+              decoration: const BoxDecoration(
+                  color: AppColors.warning, shape: BoxShape.circle),
             ),
-            showCheckmark: false,
-          );
-        },
+          ),
+      ],
+    );
+  }
+
+  // ── 즉시예약 · 내 주변 ────────────────────────────
+  Widget _quickActions() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: AppSizes.screenPadding),
+      child: Row(
+        children: [
+          Expanded(
+            child: _actionTile(
+              icon: Icons.bolt_rounded,
+              title: '지금 바로 예약',
+              subtitle: '5분 즉시 매칭',
+              gradient: true,
+              onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                  builder: (_) => const ExpressBookingScreen())),
+            ),
+          ),
+          const SizedBox(width: AppSizes.md),
+          Expanded(
+            child: _actionTile(
+              icon: Icons.near_me_rounded,
+              title: '내 주변',
+              subtitle: '가까운 관리사',
+              gradient: false,
+              onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const NearbyScreen())),
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _promoBanner() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(
-          AppSizes.screenPadding, AppSizes.lg, AppSizes.screenPadding, 0),
+  Widget _actionTile({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required bool gradient,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(AppSizes.radiusLg),
       child: Container(
         padding: const EdgeInsets.all(AppSizes.lg),
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [AppColors.navy, AppColors.navySoft],
-          ),
+          gradient: gradient ? AppDecorations.brandGradient : null,
+          color: gradient ? null : AppColors.white,
           borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+          border: gradient ? null : Border.all(color: AppColors.border),
+          boxShadow: gradient
+              ? AppDecorations.brand(opacity: 0.25)
+              : AppDecorations.soft,
         ),
-        child: Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Text('첫 예약 20% 할인',
-                      style: TextStyle(
-                          color: AppColors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w800)),
-                  SizedBox(height: 4),
-                  Text('신규 회원 전용 쿠폰이 지급되었어요',
-                      style: TextStyle(
-                          color: Colors.white70, fontSize: 13)),
-                ],
-              ),
-            ),
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(9),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.15),
-                borderRadius: BorderRadius.circular(14),
+                color: gradient
+                    ? Colors.white.withOpacity(0.2)
+                    : AppColors.accentSoft,
+                borderRadius: BorderRadius.circular(12),
               ),
-              child: const Icon(Icons.card_giftcard_rounded,
-                  color: AppColors.white, size: 30),
+              child: Icon(icon,
+                  color: gradient ? Colors.white : AppColors.navy, size: 22),
             ),
+            const SizedBox(height: 12),
+            Text(title,
+                style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                    color: gradient ? Colors.white : AppColors.textPrimary)),
+            const SizedBox(height: 2),
+            Text(subtitle,
+                style: TextStyle(
+                    fontSize: 12.5,
+                    color: gradient ? Colors.white70 : AppColors.textSecondary)),
           ],
         ),
       ),
     );
   }
 
+  // ── 카테고리 ─────────────────────────────────────
+  Widget _categorySection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding:
+              const EdgeInsets.symmetric(horizontal: AppSizes.screenPadding),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text('서비스',
+                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+              if (_category != null)
+                GestureDetector(
+                  onTap: () => setState(() => _category = null),
+                  child: const Text('전체 보기',
+                      style: TextStyle(
+                          fontSize: 13,
+                          color: AppColors.navy,
+                          fontWeight: FontWeight.w600)),
+                ),
+            ],
+          ),
+        ),
+        const SizedBox(height: AppSizes.md),
+        SizedBox(
+          height: 92,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(
+                horizontal: AppSizes.screenPadding),
+            physics: const BouncingScrollPhysics(),
+            itemCount: kServiceCategories.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 16),
+            itemBuilder: (_, i) => _categoryTile(kServiceCategories[i]),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _categoryTile(ServiceCategory c) {
+    final selected = _category == c.name;
+    return GestureDetector(
+      onTap: () => setState(() => _category = selected ? null : c.name),
+      child: Column(
+        children: [
+          Container(
+            width: 60,
+            height: 60,
+            decoration: BoxDecoration(
+              gradient: selected ? AppDecorations.brandGradient : null,
+              color: selected ? null : AppColors.accentSoft,
+              borderRadius: BorderRadius.circular(18),
+              boxShadow: selected ? AppDecorations.brand(opacity: 0.25) : null,
+            ),
+            child: Icon(c.icon,
+                color: selected ? Colors.white : AppColors.navy, size: 26),
+          ),
+          const SizedBox(height: 7),
+          Text(c.name,
+              style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
+                  color: selected ? AppColors.navy : AppColors.textSecondary)),
+        ],
+      ),
+    );
+  }
+
+  // ── 딜 / 혜택 ────────────────────────────────────
+  Widget _dealsSection() {
+    final deals = [
+      (
+        '첫 예약 20% 할인',
+        '신규 회원 전용 쿠폰',
+        Icons.card_giftcard_rounded,
+        AppDecorations.brandGradient
+      ),
+      (
+        '오늘의 타임딜',
+        '오후 2-5시 예약 시 15%',
+        Icons.bolt_rounded,
+        const LinearGradient(colors: [Color(0xFFF5A623), Color(0xFFE5844D)])
+      ),
+      (
+        '친구 초대 이벤트',
+        '초대할 때마다 5,000P',
+        Icons.people_alt_rounded,
+        const LinearGradient(colors: [Color(0xFF46A85E), Color(0xFF2E9C86)])
+      ),
+    ];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: AppSizes.screenPadding),
+          child: Text('혜택 · 이벤트',
+              style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+        ),
+        const SizedBox(height: AppSizes.md),
+        SizedBox(
+          height: 118,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(
+                horizontal: AppSizes.screenPadding),
+            itemCount: deals.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 12),
+            itemBuilder: (_, i) {
+              final d = deals[i];
+              return Container(
+                width: 260,
+                padding: const EdgeInsets.all(AppSizes.lg),
+                decoration: BoxDecoration(
+                  gradient: d.$4,
+                  borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(d.$1,
+                              style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.w800)),
+                          const SizedBox(height: 4),
+                          Text(d.$2,
+                              style: const TextStyle(
+                                  color: Colors.white70, fontSize: 12.5)),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(11),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Icon(d.$3, color: Colors.white, size: 26),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _listHeader(int count) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(
-          AppSizes.screenPadding, AppSizes.xl, AppSizes.screenPadding, AppSizes.md),
+      padding: const EdgeInsets.symmetric(horizontal: AppSizes.screenPadding),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text('추천 관리사 $count명',
-              style: const TextStyle(
-                  fontSize: 17, fontWeight: FontWeight.w800)),
+          Text(_category == null ? '추천 관리사 $count명' : '$_category · $count명',
+              style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
           Row(
             children: const [
               Icon(Icons.tune_rounded, size: 16, color: AppColors.textSecondary),
               SizedBox(width: 4),
               Text('평점순',
-                  style: TextStyle(
-                      color: AppColors.textSecondary, fontSize: 13)),
+                  style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
             ],
           ),
         ],
@@ -239,8 +448,7 @@ class _EmptyResult extends StatelessWidget {
       child: Center(
         child: Column(
           children: [
-            Icon(Icons.search_off_rounded,
-                size: 56, color: AppColors.textHint),
+            Icon(Icons.search_off_rounded, size: 56, color: AppColors.textHint),
             SizedBox(height: 12),
             Text('검색 결과가 없어요',
                 style: TextStyle(
