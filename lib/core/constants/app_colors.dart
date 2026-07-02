@@ -1,25 +1,28 @@
 import 'package:flutter/material.dart';
 
 /// 앱 전역 컬러 팔레트.
-/// 브랜드 메인 컬러는 딥 네이비(#0B2545), 배경은 화이트 위주.
+/// 클라이언트 COTRAS(재활·의료기기 헬스케어 기업) 이미지에 맞춘
+/// 메디컬 틸-블루(teal-blue) 계열. 신뢰감·청결·케어를 강조.
+///
+/// 참고: 필드명(navy 등)은 기존 코드 호환을 위해 유지하되 값은 브랜드 컬러로 조정됨.
 class AppColors {
   AppColors._();
 
-  // Brand
-  static const Color navy = Color(0xFF0B2545);
-  static const Color navyLight = Color(0xFF13315C);
-  static const Color navySoft = Color(0xFF1D4E89);
-  static const Color accent = Color(0xFF5FA8D3);
-  static const Color accentSoft = Color(0xFFDCEEFB);
+  // Brand (COTRAS medical teal-blue)
+  static const Color navy = Color(0xFF0C5C6E); // primary
+  static const Color navyLight = Color(0xFF0E6E82);
+  static const Color navySoft = Color(0xFF12768C); // secondary
+  static const Color accent = Color(0xFF17B3A6); // mint-teal
+  static const Color accentSoft = Color(0xFFD8F1EE);
 
   // Neutrals
   static const Color white = Color(0xFFFFFFFF);
-  static const Color background = Color(0xFFF6F8FB);
+  static const Color background = Color(0xFFF4F8FA);
   static const Color card = Color(0xFFFFFFFF);
-  static const Color border = Color(0xFFE6EBF1);
-  static const Color textPrimary = Color(0xFF0B2545);
-  static const Color textSecondary = Color(0xFF6B7A90);
-  static const Color textHint = Color(0xFFA0AAB8);
+  static const Color border = Color(0xFFE4EBEE);
+  static const Color textPrimary = Color(0xFF0E3A43);
+  static const Color textSecondary = Color(0xFF5E7480);
+  static const Color textHint = Color(0xFF9DAAB2);
 
   // Semantic
   static const Color success = Color(0xFF2BB673);
