@@ -7,6 +7,20 @@
 
 ---
 
+## 🌿 랜딩 페이지 (LP)
+
+전체 기능과 실제 MVP 화면을 소개하는 랜딩 페이지입니다.
+
+- **바로 보기 (링크)**: https://claude.ai/code/artifact/e5edd87b-a360-4058-96d5-f4bc9b5850c3
+- **소스 파일**: [`docs/index.html`](docs/index.html) — 폰트·이미지가 모두 내장된 단일 HTML(오프라인에서도 열림)
+
+### GitHub Pages로 공개 URL 만들기 (선택)
+1. GitHub 저장소 → **Settings → Pages**
+2. **Source**: `Deploy from a branch` → Branch를 `main`(또는 이 브랜치), 폴더를 **`/docs`** 로 선택 → Save
+3. 1~2분 뒤 `https://koreayjk.github.io/massa/` 에서 공개됩니다.
+
+---
+
 ## 🎯 이 MVP에 포함된 것
 
 브라우저(`flutter run -d chrome`)에서 바로 확인 가능한 **8개 핵심 화면**:
