@@ -32,7 +32,13 @@ class TherapistCard extends StatelessWidget {
           children: [
             Stack(
               children: [
-                Avatar(name: therapist.name, size: 64),
+                Hero(
+                  tag: 'therapist-avatar-${therapist.id}',
+                  child: Material(
+                    type: MaterialType.transparency,
+                    child: Avatar(name: therapist.name, size: 64),
+                  ),
+                ),
                 if (therapist.verified)
                   Positioned(
                     right: -2,

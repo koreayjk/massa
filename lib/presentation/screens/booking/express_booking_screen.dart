@@ -65,6 +65,7 @@ class _ExpressBookingScreenState extends State<ExpressBookingScreen> {
         service: service,
         scheduledAt: DateTime(2026, 7, 2, 15, 0),
         address: _address.text.trim(),
+        preferences: '${_intensity.label} · ${_focus.label}',
       ),
     ));
   }

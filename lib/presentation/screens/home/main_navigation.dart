@@ -28,7 +28,9 @@ class _MainNavigationState extends State<MainNavigation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(index: _index, children: _tabs),
+      // IndexedStack 대신 활성 탭만 렌더링 — 탭 전환 시 항상 최신 데이터로 다시 그림
+      // (예약 추가·취소·리뷰가 예약내역 탭에 즉시 반영되도록).
+      body: _tabs[_index],
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
           border: Border(top: BorderSide(color: AppColors.border)),

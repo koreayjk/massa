@@ -10,14 +10,22 @@ import '../../widgets/avatar.dart';
 import '../chat/chat_screen.dart';
 import '../customer/rating/write_review_screen.dart';
 
-/// 예약 내역 화면 — 예정 / 완료 탭.
-class BookingHistoryScreen extends StatelessWidget {
+/// 예약 내역 화면 — 예정 / 완료 / 취소 탭.
+/// 취소·리뷰 작성이 실제 데이터에 반영되어 즉시 화면에 나타남.
+class BookingHistoryScreen extends StatefulWidget {
   const BookingHistoryScreen({super.key});
+
+  @override
+  State<BookingHistoryScreen> createState() => _BookingHistoryScreenState();
+}
+
+class _BookingHistoryScreenState extends State<BookingHistoryScreen> {
+  void _refresh() => setState(() {});
 
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 2,
+      length: 3,
       child: Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false,
@@ -28,13 +36,14 @@ class BookingHistoryScreen extends StatelessWidget {
             indicatorColor: AppColors.navy,
             indicatorWeight: 2.5,
             labelStyle: TextStyle(fontWeight: FontWeight.w700),
-            tabs: [Tab(text: '예정'), Tab(text: '완료')],
+            tabs: [Tab(text: '예정'), Tab(text: '완료'), Tab(text: '취소')],
           ),
         ),
         body: TabBarView(
           children: [
-            _BookingList(status: BookingStatus.upcoming),
-            _BookingList(status: BookingStatus.completed),
+            _BookingList(status: BookingStatus.upcoming, onChanged: _refresh),
+            _BookingList(status: BookingStatus.completed, onChanged: _refresh),
+            _BookingList(status: BookingStatus.cancelled, onChanged: _refresh),
           ],
         ),
       ),
@@ -44,7 +53,8 @@ class BookingHistoryScreen extends StatelessWidget {
 
 class _BookingList extends StatelessWidget {
   final BookingStatus status;
-  const _BookingList({required this.status});
+  final VoidCallback onChanged;
+  const _BookingList({required this.status, required this.onChanged});
 
   @override
   Widget build(BuildContext context) {
@@ -61,9 +71,11 @@ class _BookingList extends StatelessWidget {
                 size: 56, color: AppColors.textHint),
             const SizedBox(height: 12),
             Text(
-              status == BookingStatus.upcoming
-                  ? '예정된 예약이 없어요'
-                  : '완료된 예약이 없어요',
+              switch (status) {
+                BookingStatus.upcoming => '예정된 예약이 없어요',
+                BookingStatus.completed => '완료된 예약이 없어요',
+                BookingStatus.cancelled => '취소된 예약이 없어요',
+              },
               style: const TextStyle(
                   fontSize: 15, color: AppColors.textSecondary),
             ),
@@ -76,18 +88,19 @@ class _BookingList extends StatelessWidget {
       padding: const EdgeInsets.all(AppSizes.screenPadding),
       itemCount: items.length,
       separatorBuilder: (_, __) => const SizedBox(height: AppSizes.md),
-      itemBuilder: (_, i) => _BookingTile(booking: items[i]),
+      itemBuilder: (_, i) =>
+          _BookingTile(booking: items[i], onChanged: onChanged),
     );
   }
 }
 
 class _BookingTile extends StatelessWidget {
   final Booking booking;
-  const _BookingTile({required this.booking});
+  final VoidCallback onChanged;
+  const _BookingTile({required this.booking, required this.onChanged});
 
   @override
   Widget build(BuildContext context) {
-    final upcoming = booking.status == BookingStatus.upcoming;
     return Container(
       padding: const EdgeInsets.all(AppSizes.lg),
       decoration: BoxDecoration(
@@ -149,51 +162,73 @@ class _BookingTile extends StatelessWidget {
               ),
             ],
           ),
-          if (upcoming) ...[
-            const SizedBox(height: AppSizes.md),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => _confirmCancel(context),
-                    style: OutlinedButton.styleFrom(
-                        minimumSize: const Size.fromHeight(44)),
-                    child: const Text('예약 취소'),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () => Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) =>
-                            ChatScreen(peerName: booking.therapist.name),
-                      ),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                        minimumSize: const Size.fromHeight(44)),
-                    child: const Text('채팅하기'),
-                  ),
-                ),
-              ],
-            ),
-          ] else ...[
-            const SizedBox(height: AppSizes.md),
-            OutlinedButton.icon(
-              onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => WriteReviewScreen(booking: booking),
-                ),
-              ),
-              icon: const Icon(Icons.rate_review_outlined, size: 18),
-              label: const Text('리뷰 작성'),
-              style: OutlinedButton.styleFrom(
-                  minimumSize: const Size.fromHeight(44)),
-            ),
-          ],
+          ..._actions(context),
         ],
       ),
     );
+  }
+
+  List<Widget> _actions(BuildContext context) {
+    switch (booking.status) {
+      case BookingStatus.upcoming:
+        return [
+          const SizedBox(height: AppSizes.md),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () => _confirmCancel(context),
+                  style: OutlinedButton.styleFrom(
+                      minimumSize: const Size.fromHeight(44)),
+                  child: const Text('예약 취소'),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) =>
+                          ChatScreen(peerName: booking.therapist.name),
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                      minimumSize: const Size.fromHeight(44)),
+                  child: const Text('채팅하기'),
+                ),
+              ),
+            ],
+          ),
+        ];
+      case BookingStatus.completed:
+        return [
+          const SizedBox(height: AppSizes.md),
+          booking.reviewed
+              ? OutlinedButton.icon(
+                  onPressed: null,
+                  icon: const Icon(Icons.check_rounded, size: 18),
+                  label: const Text('리뷰 작성 완료'),
+                  style: OutlinedButton.styleFrom(
+                      minimumSize: const Size.fromHeight(44)),
+                )
+              : OutlinedButton.icon(
+                  onPressed: () async {
+                    await Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => WriteReviewScreen(booking: booking),
+                      ),
+                    );
+                    onChanged();
+                  },
+                  icon: const Icon(Icons.rate_review_outlined, size: 18),
+                  label: const Text('리뷰 작성'),
+                  style: OutlinedButton.styleFrom(
+                      minimumSize: const Size.fromHeight(44)),
+                ),
+        ];
+      case BookingStatus.cancelled:
+        return const [];
+    }
   }
 
   void _confirmCancel(BuildContext context) {
@@ -214,7 +249,9 @@ class _BookingTile extends StatelessWidget {
           ElevatedButton(
             onPressed: () {
               Navigator.of(dctx).pop();
-              context.showToast('예약이 취소되었어요',
+              booking.status = BookingStatus.cancelled;
+              onChanged();
+              context.showToast('예약이 취소되었어요. 취소 탭에서 확인할 수 있어요.',
                   icon: Icons.cancel_outlined);
             },
             style: ElevatedButton.styleFrom(

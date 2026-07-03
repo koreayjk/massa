@@ -21,12 +21,22 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
+enum _Sort {
+  rating('평점순'),
+  distance('거리순'),
+  price('가격순');
+
+  const _Sort(this.label);
+  final String label;
+}
+
 class _HomeScreenState extends State<HomeScreen> {
   String? _category; // null = 전체
   String _query = '';
+  _Sort _sort = _Sort.rating;
 
   List<Therapist> get _filtered {
-    return MockRepository.therapists.where((t) {
+    final list = MockRepository.therapists.where((t) {
       final matchCategory =
           _category == null || t.specialties.contains(_category);
       final matchQuery = _query.isEmpty ||
@@ -35,6 +45,21 @@ class _HomeScreenState extends State<HomeScreen> {
           t.location.contains(_query);
       return matchCategory && matchQuery;
     }).toList();
+    switch (_sort) {
+      case _Sort.rating:
+        list.sort((a, b) => b.rating.compareTo(a.rating));
+      case _Sort.distance:
+        list.sort((a, b) => a.distanceKm.compareTo(b.distanceKm));
+      case _Sort.price:
+        list.sort((a, b) => a.minPrice.compareTo(b.minPrice));
+    }
+    return list;
+  }
+
+  void _cycleSort() {
+    final next =
+        _Sort.values[(_sort.index + 1) % _Sort.values.length];
+    setState(() => _sort = next);
   }
 
   void _openDetail(Therapist t) => Navigator.of(context).push(
@@ -435,13 +460,29 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           Text(_category == null ? '추천 관리사 $count명' : '$_category · $count명',
               style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
-          Row(
-            children: const [
-              Icon(Icons.tune_rounded, size: 16, color: AppColors.textSecondary),
-              SizedBox(width: 4),
-              Text('평점순',
-                  style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
-            ],
+          GestureDetector(
+            onTap: _cycleSort,
+            child: Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+              decoration: BoxDecoration(
+                color: AppColors.white,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: AppColors.border),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.swap_vert_rounded,
+                      size: 15, color: AppColors.navy),
+                  const SizedBox(width: 4),
+                  Text(_sort.label,
+                      style: const TextStyle(
+                          color: AppColors.navy,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700)),
+                ],
+              ),
+            ),
           ),
         ],
       ),

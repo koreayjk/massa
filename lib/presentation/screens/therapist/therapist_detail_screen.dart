@@ -96,7 +96,13 @@ class TherapistDetailScreen extends StatelessWidget {
   Widget _profileHeader() {
     return Row(
       children: [
-        Avatar(name: therapist.name, size: 84),
+        Hero(
+          tag: 'therapist-avatar-${therapist.id}',
+          child: Material(
+            type: MaterialType.transparency,
+            child: Avatar(name: therapist.name, size: 84),
+          ),
+        ),
         const SizedBox(width: AppSizes.lg),
         Expanded(
           child: Column(

@@ -11,6 +11,7 @@ enum BookingStatus {
 }
 
 /// 고객이 생성한 예약.
+/// 데모에서 취소·리뷰 작성이 실제로 반영되도록 [status]와 [reviewed]는 가변.
 class Booking {
   final String id;
   final Therapist therapist;
@@ -18,9 +19,10 @@ class Booking {
   final DateTime scheduledAt;
   final String address;
   final int totalPrice;
-  final BookingStatus status;
+  BookingStatus status;
+  bool reviewed;
 
-  const Booking({
+  Booking({
     required this.id,
     required this.therapist,
     required this.service,
@@ -28,5 +30,6 @@ class Booking {
     required this.address,
     required this.totalPrice,
     required this.status,
+    this.reviewed = false,
   });
 }

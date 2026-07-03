@@ -46,6 +46,7 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
       };
 
   void _submit() {
+    widget.booking.reviewed = true;
     MockRepository.instance.addCustomerReview(
       Review(
         id: 'cr${MockRepository.instance.customerWrittenReviews.length}',

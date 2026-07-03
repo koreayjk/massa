@@ -16,6 +16,7 @@ class BookingConfirmScreen extends StatefulWidget {
   final Service service;
   final DateTime scheduledAt;
   final String address;
+  final String? preferences; // 케어 옵션(강도 · 부위) 요약
 
   const BookingConfirmScreen({
     super.key,
@@ -23,6 +24,7 @@ class BookingConfirmScreen extends StatefulWidget {
     required this.service,
     required this.scheduledAt,
     required this.address,
+    this.preferences,
   });
 
   @override
@@ -91,6 +93,8 @@ class _BookingConfirmScreenState extends State<BookingConfirmScreen> {
                 _row(Icons.spa_outlined, '서비스', widget.service.name),
                 _row(Icons.schedule_rounded, '소요시간',
                     Formatters.duration(widget.service.durationMinutes)),
+                if (widget.preferences != null)
+                  _row(Icons.tune_rounded, '케어 옵션', widget.preferences!),
                 _row(Icons.event_rounded, '일시',
                     Formatters.dateTime(widget.scheduledAt)),
                 _row(Icons.home_outlined, '주소', widget.address, last: true),

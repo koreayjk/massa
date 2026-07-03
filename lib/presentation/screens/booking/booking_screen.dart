@@ -5,10 +5,11 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../data/models/service.dart';
+import '../../../data/models/service_category.dart';
 import '../../../data/models/therapist.dart';
 import 'booking_confirm_screen.dart';
 
-/// 예약 화면 — 서비스 → 날짜 → 시간 → 주소.
+/// 예약 화면 — 서비스 → 케어 옵션(강도·부위) → 날짜 → 시간 → 주소.
 class BookingScreen extends StatefulWidget {
   final Therapist therapist;
   const BookingScreen({super.key, required this.therapist});
@@ -19,6 +20,8 @@ class BookingScreen extends StatefulWidget {
 
 class _BookingScreenState extends State<BookingScreen> {
   Service? _service;
+  Intensity _intensity = Intensity.medium;
+  BodyFocus _focus = BodyFocus.full;
   DateTime? _date;
   String? _time;
   final _addressCtrl = TextEditingController();
@@ -68,6 +71,7 @@ class _BookingScreenState extends State<BookingScreen> {
           service: _service!,
           scheduledAt: scheduledAt,
           address: _addressCtrl.text.trim(),
+          preferences: '${_intensity.label} · ${_focus.label}',
         ),
       ),
     );
@@ -85,15 +89,19 @@ class _BookingScreenState extends State<BookingScreen> {
           const SizedBox(height: AppSizes.md),
           ...widget.therapist.services.map(_serviceOption),
           const SizedBox(height: AppSizes.xl),
-          _stepTitle('2', '날짜 선택'),
+          _stepTitle('2', '케어 옵션'),
+          const SizedBox(height: AppSizes.md),
+          _careOptions(),
+          const SizedBox(height: AppSizes.xl),
+          _stepTitle('3', '날짜 선택'),
           const SizedBox(height: AppSizes.md),
           _calendar(),
           const SizedBox(height: AppSizes.xl),
-          _stepTitle('3', '시간 선택'),
+          _stepTitle('4', '시간 선택'),
           const SizedBox(height: AppSizes.md),
           _timeGrid(),
           const SizedBox(height: AppSizes.xl),
-          _stepTitle('4', '방문 주소'),
+          _stepTitle('5', '방문 주소'),
           const SizedBox(height: AppSizes.md),
           TextField(
             controller: _addressCtrl,
@@ -178,6 +186,72 @@ class _BookingScreenState extends State<BookingScreen> {
                     color: AppColors.navy)),
           ],
         ),
+      ),
+    );
+  }
+
+  /// 강도 · 집중 부위 선택 (Maso식 취향 옵션).
+  Widget _careOptions() {
+    return Container(
+      padding: const EdgeInsets.all(AppSizes.lg),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('강도',
+              style: TextStyle(
+                  fontSize: 13.5,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textSecondary)),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: Intensity.values
+                .map((v) => _optionChip(v.label, v == _intensity,
+                    () => setState(() => _intensity = v)))
+                .toList(),
+          ),
+          const SizedBox(height: AppSizes.lg),
+          const Text('집중 케어 부위',
+              style: TextStyle(
+                  fontSize: 13.5,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textSecondary)),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: BodyFocus.values
+                .map((v) => _optionChip(v.label, v == _focus,
+                    () => setState(() => _focus = v)))
+                .toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _optionChip(String label, bool selected, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+        decoration: BoxDecoration(
+          color: selected ? AppColors.navy : AppColors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+              color: selected ? AppColors.navy : AppColors.border),
+        ),
+        child: Text(label,
+            style: TextStyle(
+                fontSize: 13.5,
+                fontWeight: FontWeight.w600,
+                color: selected ? Colors.white : AppColors.textSecondary)),
       ),
     );
   }
